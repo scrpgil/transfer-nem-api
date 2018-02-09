@@ -18,17 +18,21 @@ import (
 )
 
 const (
-	MODE      = 1                          // 1:シングルモード, 2:マルチモード
+	MODE      = 2                          // 1:シングルモード, 2:マルチモード
 	FIRST_URL = "http://go.nem.ninja:7890" //最初にpeerlistを取得しにいくURLです
-	HOUR      = 24                         // 更新間隔
+	HOUR      = 8                          // 更新間隔
+	PORT_MODE = false                      // ポートによって処理を分けるか？
+	THRESHOLD = 10                         // MAXのブロック高さとのしきい値
 )
 
 type PeerList struct {
 	Update    time.Time `json:"update"`
 	UpdateStr string    `json:"update_str"`
+	MaxHeight int64     `json:"max_height"`
 	Inactive  []*Node   `json:"inactive"`
 	Active    []*Node   `json:"active"`
 	Busy      []*Node   `json:"busy"`
+	LowHeight []*Node   `json:"low_height"`
 }
 
 type Node struct {
@@ -62,13 +66,10 @@ type Identity struct {
 	PublicKey string `json:"public-key"`
 }
 
-var peerList PeerList
+var peerList *PeerList
 var maxHeight int64
 
 func init() {
-	uri := FIRST_URL + "/node/peer-list/all"
-	byteArray, _ := util.Request("GET", uri)
-	_ = json.Unmarshal(byteArray, &peerList)
 	if MODE == 2 {
 		go func() {
 			t := time.NewTicker(HOUR * time.Hour) // 指定時間置きに実行
@@ -95,25 +96,45 @@ func main() {
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
+	if MODE == 2 {
+		if peerList == nil {
+			http.Error(w, "During startup.", 404)
+			return
+		}
+	}
 	host := r.Host
 	_, port := util.URLParse(host)
 	switch port {
 	case "8080":
-		// ポート：8080なら取得したAPI情報を返却
-		path := r.URL.Path
-		switch path {
-		case "/":
-			GetPeerList(w, r)
-		default:
-			// それ以外はエラー
-			http.Error(w, "URL is not found.", 404)
-		}
+		PathCheck(w, r)
 	case "7890":
 		// ポート：7890ならNISへリクエストを中継
 		TransferApi(w, r)
 	default:
-		// それ以外はエラー
-		http.Error(w, "Not found.", 404)
+		if PORT_MODE == true {
+			// それ以外はエラー
+			http.Error(w, "URL Not found.", 404)
+		} else {
+			// ポートによって処理を分けないなら中継処理へ。GAE用
+			PathCheck(w, r)
+		}
+	}
+}
+
+// パスによって処理を分ける
+func PathCheck(w http.ResponseWriter, r *http.Request) {
+	// ポート：8080なら取得したAPI情報を返却
+	path := r.URL.Path
+	switch path {
+	case "/":
+		if MODE == 2 {
+			GetPeerList(w, r)
+		} else {
+			http.Error(w, "Not found.", 404)
+		}
+	default:
+		// デフォルトならNISへリクエストを中継。GAEで7890ポートの解放ができなかったため
+		TransferApi(w, r)
 	}
 }
 
@@ -157,36 +178,50 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 // ヘルスチェック用の処理
 func GetMultiNode() {
+	uri := FIRST_URL + "/node/peer-list/all"
+	byteArray, _ := util.Request("GET", uri)
+	tmpPeerList := &PeerList{}
+	_ = json.Unmarshal(byteArray, tmpPeerList)
 	maxHeight = int64(0)
 
 	// WaitGroupの値を取る
 	wg := &sync.WaitGroup{}
 	c := make(chan int, 20)
-	for idx, a := range peerList.Active {
+	for idx, a := range tmpPeerList.Active {
 		wg.Add(1)
-		go func(num int, a *Node) {
+		go func(num int, a *Node, p *PeerList) {
 			c <- 1
-			process(num, a)
+			process(num, a, p)
 			defer func() {
 				<-c
 				wg.Done()
 			}()
-		}(idx, a)
+		}(idx, a, tmpPeerList)
 	}
 	wg.Wait()
 	// 高さチェック
-	for _, a := range peerList.Active {
-		if a.Height < maxHeight-10 {
+	newActive := []*Node{}
+	lowHeight := []*Node{}
+	for _, a := range tmpPeerList.Active {
+		if a.Height < maxHeight-THRESHOLD {
 			a.Active = false
 			e := a.Endpoint
 			uri := e.Protocol + "://" + e.Host + ":" + strconv.Itoa(e.Port) + "/chain/height"
-			fmt.Println("低すぎ:", uri)
+			fmt.Println("LowHeight:", uri)
+			lowHeight = append(lowHeight, a)
 			continue
+		} else {
+			newActive = append(newActive, a)
 		}
 	}
+	tmpPeerList.Active = newActive
+	tmpPeerList.LowHeight = lowHeight
+	tmpPeerList.MaxHeight = maxHeight
+
 	now, timeStr := util.GetNowTime()
-	peerList.Update = now
-	peerList.UpdateStr = timeStr
+	tmpPeerList.Update = now
+	tmpPeerList.UpdateStr = timeStr
+	peerList = tmpPeerList
 }
 
 // プライベート関数
@@ -206,24 +241,24 @@ func getUri() string {
 	}
 }
 
-func process(idx int, a *Node) {
+func process(idx int, a *Node, p *PeerList) {
 	e := a.Endpoint
 	uri := e.Protocol + "://" + e.Host + ":" + strconv.Itoa(e.Port) + "/chain/height"
 	fmt.Println("uri:", uri)
 	byteArray, err := util.Request("GET", uri)
 	if err != nil {
 		fmt.Println("応答なし:", uri)
-		peerList.Active[idx].Active = false
+		p.Active[idx].Active = false
 	} else {
 		h := &Height{0}
-		peerList.Active[idx].Height = h.Height
+		p.Active[idx].Height = h.Height
 		if err := json.Unmarshal(byteArray, &h); err != nil {
 			fmt.Println("応答なし:", uri)
-			peerList.Active[idx].Active = false
+			p.Active[idx].Active = false
 		} else {
 			fmt.Println("height:", h.Height)
-			peerList.Active[idx].Active = true
-			peerList.Active[idx].Height = h.Height
+			p.Active[idx].Active = true
+			p.Active[idx].Height = h.Height
 			if h.Height >= maxHeight {
 				maxHeight = h.Height
 			}
