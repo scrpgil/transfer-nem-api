@@ -83,9 +83,11 @@ const (
 
 以下リンクより各ノードの最大チェーン取得結果を返却します。内容は「/node/peer-list/all」の取得結果に更新日時、最大チェーン、各ノードの最大チェーンのメンバを付け加えたものです。
 
-[https://transfer.nemfolio.net/]
+[https://transfer.nemfolio.net/](https://transfer.nemfolio.net/)
 
-````json
+・返却内容
+
+````
 {
   "update": "更新日時（例：2018-02-10T10:47:32.088503257+09:00）",
   "update_str": "更新日時別フォーマット（例：10:47:32 2018-02-10）",
