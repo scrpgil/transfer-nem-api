@@ -4,7 +4,7 @@
 NIS APIへリクエストを中継するサーバーです。  
 GAE/Goで書かれています。  
 
-[NISによってAPI呼び出しの結果が古い場合について](https://goo.gl/DSJWT6){:target="_blank"}
+[NISによってAPI呼び出しの結果が古い場合について](https://goo.gl/DSJWT6)
 
 
 ## 使い方
@@ -13,7 +13,7 @@ GAE/Goで書かれています。
 
 nemofolioで使っています。
 
-[nemfolio](https://nemfolio.net){:target="_blank"}
+[nemfolio](https://nemfolio.net)
 
 
 ### インストール
@@ -35,7 +35,7 @@ gcloud app deploy
 
 gcloudの設定は別途やっておく必要があります。公式ドキュメントがおすすめです。
 
-[Google App Engine Go Standard Environment ドキュメント](https://cloud.google.com/appengine/docs/standard/go/?hl=ja){:target="_blank"}
+[Google App Engine Go Standard Environment ドキュメント](https://cloud.google.com/appengine/docs/standard/go/?hl=ja)
 
 ### 設定
 
@@ -84,7 +84,7 @@ const (
 
 以下リンクより各ノードの最大チェーン取得結果を返却します。内容は「/node/peer-list/all」の取得結果に更新日時、最大チェーン、各ノードの最大チェーンのメンバを付け加えたものです。
 
-[https://transfer.nemfolio.net/](https://transfer.nemfolio.net/){:target="_blank"}
+[https://transfer.nemfolio.net/](https://transfer.nemfolio.net/)
 
 
 ````
@@ -128,7 +128,7 @@ SSL通信を中継するのは、nemfolioがPWAだからです。PWAはSSL通信
 
 また、Firebase Hostingのようにhttps通信のみ対応のホスティングサービスもあるので、私にはSSL通信の中継をするサーバーが必要でした。
 
-[Firebase HostingのSSLにのみ対応の記載](https://twitter.com/scrpgil/status/956711883133747200){:target="_blank"}
+[Firebase HostingのSSLにのみ対応の記載](https://twitter.com/scrpgil/status/956711883133747200)
 
 
 NISへの負荷分散がしたかったのはビビリなので、一つのNISに対してリクエスト送りすぎて迷惑だと言われたらどうしようと感じたからです。  
