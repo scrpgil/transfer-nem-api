@@ -86,7 +86,6 @@ const (
 
 [https://transfer.nemfolio.net/](https://transfer.nemfolio.net/)
 
-・返却内容
 
 ````
 {
@@ -126,11 +125,10 @@ const (
 
 SSL通信を中継するのは、nemfolioがPWAだからです。PWAはSSL通信前提の作りです。  
 そのためNISが非SSL通信ですとMixedContent扱いとなって、動作しなくなります。  
-また、Firebase Hostingのようにhttps通信のみ対応のホスティングサービスもあります。
+また、Firebase Hostingのようにhttps通信のみ対応のホスティングサービスもあるので、私にはSSL通信の中継をするサーバーが必要でした。
 
 [Firebase HostingのSSLにのみ対応の記載](https://twitter.com/scrpgil/status/956711883133747200)
 
-そのためNISが非SSL通信ですとMixedContent扱いとなって、動作しなくなります。  
 
 NISへの負荷分散がしたかったのはビビリなので、一つのNISに対してリクエスト送りすぎて迷惑だと言われたらどうしようと感じたからです。  
 
