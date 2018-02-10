@@ -1,3 +1,4 @@
+
 # transfer-nem-api
 
 NIS APIへリクエストを中継するサーバーです。  
@@ -109,6 +110,7 @@ const (
       "active": 状態
     },
   ],
+}
 ````
 
 
@@ -123,7 +125,12 @@ const (
 - NISの負荷分散がしたい 
 
 SSL通信を中継するのは、nemfolioがPWAだからです。PWAはSSL通信前提の作りです。  
-そのため非SSL通信のNISとの通信はMixedContent扱いなので、動作しなくなります。  
+そのためNISが非SSL通信ですとMixedContent扱いとなって、動作しなくなります。  
+また、Firebase Hostingのようにhttps通信のみ対応のホスティングサービスもあります。
+
+[Firebase HostingのSSLにのみ対応の記載](https://twitter.com/scrpgil/status/956711883133747200)
+
+そのためNISが非SSL通信ですとMixedContent扱いとなって、動作しなくなります。  
 
 NISへの負荷分散がしたかったのはビビリなので、一つのNISに対してリクエスト送りすぎて迷惑だと言われたらどうしようと感じたからです。  
 
