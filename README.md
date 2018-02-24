@@ -1,4 +1,3 @@
-
 # transfer-nem-api
 
 NIS APIへリクエストを中継するサーバーです。  
@@ -14,7 +13,8 @@ GAE/Goで書かれています。
 
 nemofolioで使っています。
 
-[nemfolio](https://nemfolio.net)
+nemfolio  
+※一旦止めました
 
 
 ### インストール
@@ -137,5 +137,8 @@ NISへの負荷分散がしたかったのはビビリなので、一つのNIS�
 ### 運用について
 
 現在、nemfolio.netにて動作確認中です。
+
+他のリソースにGAE/Goを使うため一旦止めました。  
+自鯖にてSSL通信の設定が済んだら再稼働させます
 
 
