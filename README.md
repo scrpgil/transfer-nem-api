@@ -141,4 +141,20 @@ NISへの負荷分散がしたかったのはビビリなので、一つのNIS�
 他のリソースにGAE/Goを使うため一旦止めました。  
 自鯖にてSSL通信の設定が済んだら再稼働させます
 
+2018/03/20追記  
+信頼できるノードを探したり、中継プログラムを書くよりは自分でNISを立てるほうが明快な気がしてきました。  
+以下、現在運用中のNISです。  
+・Mainnet  
+[https://nis.xiaca.org:7891/chain/height](https://nis.xiaca.org:7891/chain/height)  
+※GCPのクレジットが切れたら止めると思います。  
+・Testnet  
+[https://testnet-nis.xiaca.org:7891/chain/height](https://testnet-nis.xiaca.org:7891/chain/height)
 
+
+
+性能要件  
+・Mainnet  
+GCP カスタム（vCPU x 1、メモリ 2.75 GB）  
+
+・Testnet  
+GMOクラウドVPS 1GBプラン
