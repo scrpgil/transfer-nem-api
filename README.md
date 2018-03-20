@@ -143,9 +143,9 @@ NISへの負荷分散がしたかったのはビビリなので、一つのNIS�
 
 2018/03/20追記  
 信頼できるノードを探したり、中継プログラムを書くよりは自分でNISを立てるほうが明快な気がしてきました。  
-以下、現在運用中のNISです。  
+以下、現在運用中のNISです。  
 ・Mainnet  
-[https://nis.xiaca.org:7891/chain/height](https://nis.xiaca.org:7891/chain/height)  
+[https://nis.xiaca.org:7891/chain/height](https://nis.xiaca.org:7891/chain/height)  
 ※GCPのクレジットが切れたら止めると思います。  
 ・Testnet  
 [https://testnet-nis.xiaca.org:7891/chain/height](https://testnet-nis.xiaca.org:7891/chain/height)
