@@ -147,9 +147,12 @@ NISへの負荷分散がしたかったのはビビリなので、一つのNIS�
 ・Mainnet  
 [https://nis.xiaca.org:7891/chain/height](https://nis.xiaca.org:7891/chain/height)  
 ※GCPのクレジットが切れたら止めると思います。  
+
 ・Testnet  
 [https://testnet-nis.xiaca.org:7891/chain/height](https://testnet-nis.xiaca.org:7891/chain/height)
 
+※Supernodeリストのメモ  
+[https://github.com/ethersecurity/nodes/blob/master/nem/nodes.txt](https://github.com/ethersecurity/nodes/blob/master/nem/nodes.txt)
 
 
 性能要件  
